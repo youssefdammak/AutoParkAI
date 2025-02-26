@@ -1,0 +1,8 @@
+
+path: E:/AutoParkAI/plateDetectionTraining/data1
+train: images
+val: valid/images
+
+#classes
+names:
+  0: plate
