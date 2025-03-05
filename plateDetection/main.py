@@ -27,7 +27,7 @@ while ret:
     #frame : numpy array for video frame(image)
     ret,frame=cap.read()
     
-    if ret and frame_nmr<10:
+    if ret:
         results[frame_nmr]={}
         #detect vehicles
         detections=coco_model(frame)[0]
@@ -65,5 +65,5 @@ while ret:
                                             'bbox_score': score,
                                             'text_score': license_plate_text_score}}
                 
-            # write results
-            write_csv(results, r'E:\AutoParkAI\plateDetection\test.csv')
+# write results
+write_csv(results, r'E:\AutoParkAI\plateDetection\test.csv')
