@@ -65,5 +65,5 @@ while ret:
                                             'bbox_score': score,
                                             'text_score': license_plate_text_score}}
                 
-# write results
-write_csv(results, r'E:\AutoParkAI\plateDetection\test.csv')
+            # write results
+            write_csv(results, r'E:\AutoParkAI\plateDetection\raw_data.csv')
