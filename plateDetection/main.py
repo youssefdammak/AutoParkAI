@@ -3,6 +3,12 @@ import cv2
 from sort.sort import*
 from util import*
 from collections import Counter
+import pandas as pd
+import mysql.connector
+from config import db_config
+# Connect to MySQL
+conn = mysql.connector.connect(**db_config)
+cursor = conn.cursor()
 
 results={}
 
@@ -18,10 +24,6 @@ cap = cv2.VideoCapture(r"E:\AutoParkAI\plateDetectionTraining\videoTest.mp4")
 
 #make an array of class ID's (car , motorbike , bus , truck)
 vehicles=[2,3,5,7]
-
-#initialize previous frame
-ret,rev_frame=cap.read()
-prev_gray=cv2.cvtCOLOR(rev_frame, cv2.COLOR_BGR2GRAY) if ret else None
 
 # Storage for detected plates
 plate_detections = []
@@ -87,6 +89,18 @@ while ret:
                 # Get the highest confidence score for that plate
                 highest_score = max(score for plate, score in plate_detections if plate == most_frequent_plate)
 
+                # Check if the plate exists
+                sql_check = "SELECT COUNT(*) FROM users WHERE plate_number = %s"
+                cursor.execute(sql_check, (most_frequent_plate,))
+                exists = cursor.fetchone()[0]  # Get count
+
+                if highest_score>0.5 and occurance_count>4 and exists==0:
+
+                    # Insert only if it doesn't exist
+                    sql_insert = "INSERT INTO users (plate_number) VALUES (%s)"
+                    cursor.execute(sql_insert, (most_frequent_plate,))
+                    conn.commit()
+                plate_detections.clear()
 
             if license_plate_text is not None:
                 results[frame_nmr][car_id]={'car': {'bbox': [xcar1, ycar1, xcar2, ycar2]},
