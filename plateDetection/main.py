@@ -2,6 +2,7 @@ from ultralytics import YOLO
 import cv2
 from sort.sort import*
 from util import*
+from collections import Counter
 
 results={}
 
@@ -18,15 +19,26 @@ cap = cv2.VideoCapture(r"E:\AutoParkAI\plateDetectionTraining\videoTest.mp4")
 #make an array of class ID's (car , motorbike , bus , truck)
 vehicles=[2,3,5,7]
 
+#initialize previous frame
+ret,rev_frame=cap.read()
+prev_gray=cv2.cvtCOLOR(rev_frame, cv2.COLOR_BGR2GRAY) if ret else None
+
+# Storage for detected plates
+plate_detections = []
+
 #read frames
 frame_nmr=-1
 ret = True
+
 while ret:
     frame_nmr+=1
     #ret : true if frame is captured
     #frame : numpy array for video frame(image)
     ret,frame=cap.read()
     
+    if not ret:
+        break
+
     if ret:
         results[frame_nmr]={}
         #detect vehicles
@@ -45,6 +57,10 @@ while ret:
         for license_plate in license_plates.boxes.data.tolist():
             x1,y1,x2,y2,score,class_id=license_plate
 
+            #filter low confidence plates
+            if score<0.5:
+                continue
+
             #assign license plate to car 
             xcar1,ycar1,xcar2,ycar2,car_id=get_car(license_plate,track_ids)
 
@@ -58,6 +74,20 @@ while ret:
             #read license plate number
             license_plate_text,license_plate_text_score=read_license_plate(license_plate_crop_thresh)
             
+            if license_plate_text:
+                plate_detections.append((license_plate_text,score))
+            
+            if frame_nmr%10==0 and license_plate_text:
+                # Count occurrences of each plate
+                plate_counts = Counter(plate for plate, _ in plate_detections)
+
+                # Get the most frequent plate
+                most_frequent_plate,occurance_count = plate_counts.most_common(1)[0]
+
+                # Get the highest confidence score for that plate
+                highest_score = max(score for plate, score in plate_detections if plate == most_frequent_plate)
+
+
             if license_plate_text is not None:
                 results[frame_nmr][car_id]={'car': {'bbox': [xcar1, ycar1, xcar2, ycar2]},
                                             'license_plate': {'bbox': [x1, y1, x2, y2],
