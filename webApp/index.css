@@ -1,0 +1,82 @@
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3a56d4;
+    --secondary: #3f37c9;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+    --dark: #212529;
+    --light: #f8f9fa;
+    --gray: #6c757d;
+    --gray-light: #e9ecef;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light);
+    color: var(--dark);
+    line-height: 1.6;
+}
+
+/*Header Styling*/
+header{
+    color: white;
+    text-align: center;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+}
+
+.header-container{
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    align-items: center;
+}
+
+.logo{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo i{
+    font-size: 2rem;
+}
+
+.logo h1{
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.logo p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+nav ul{
+    display: flex;
+    list-style: none;
+    gap: 20px;
+}
+
+nav a{
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s;
+}
+
+nav a:hover{
+    opacity: 0.8;
+}
