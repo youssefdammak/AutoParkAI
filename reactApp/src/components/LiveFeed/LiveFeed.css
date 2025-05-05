@@ -1,0 +1,61 @@
+.live-feed-container{
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.live-feed-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.live-feed{
+    width: 100%;
+    height: 400px;
+    background-color: var(--gray-light);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--gray);
+    position: relative;
+    overflow: hidden;
+}
+
+.live-feed img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.live-feed-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.live-feed-overlay i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.live-feed-overlay p {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
