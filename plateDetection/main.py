@@ -6,6 +6,20 @@ from collections import Counter
 import pandas as pd
 import mysql.connector
 from config import db_config
+from flask import Flask, jsonify, make_response
+from threading import Thread
+from collections import Counter
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+latest_plate = None  # Global variable to store latest detected plate
+@app.route('/latest-plate', methods=['GET'])
+def get_latest_plate():
+    response = make_response(jsonify({"plate_number": latest_plate or None}))
+    response.headers["Cache-Control"] = "no-cache"
+    return response
+
 # Connect to MySQL
 conn = mysql.connector.connect(**db_config)
 cursor = conn.cursor()
@@ -28,86 +42,100 @@ vehicles=[2,3,5,7]
 # Storage for detected plates
 plate_detections = []
 
-#read frames
-frame_nmr=-1
-ret = True
+def run_video_processing():
+    global latest_plate
 
-while ret:
-    frame_nmr+=1
-    #ret : true if frame is captured
-    #frame : numpy array for video frame(image)
-    ret,frame=cap.read()
-    
-    if not ret:
-        break
+    #read frames
+    frame_nmr=-1
+    ret = True
 
-    if ret:
-        results[frame_nmr]={}
-        #detect vehicles
-        detections=coco_model(frame)[0]
-        detections_=[]
-        for detection in detections.boxes.data.tolist():
-            x1,y1,x2,y2,score,class_id=detection
-            if int(class_id) in vehicles:
-                detections_.append([x1,y1,x2,y2,score])
+    while ret:
+        frame_nmr+=1
+        #ret : true if frame is captured
+        #frame : numpy array for video frame(image)
+        ret,frame=cap.read()
         
-        #track vehicles
-        track_ids=mot_tracker.update(np.asarray(detections_)) #it will match the new detections to the existing objects
+        if not ret:
+            break
 
-        #detect license plates
-        license_plates=license_plate_detector(frame)[0]
-        for license_plate in license_plates.boxes.data.tolist():
-            x1,y1,x2,y2,score,class_id=license_plate
-
-            #filter low confidence plates
-            if score<0.5:
-                continue
-
-            #assign license plate to car 
-            xcar1,ycar1,xcar2,ycar2,car_id=get_car(license_plate,track_ids)
-
-            #crop license plate
-            license_plate_crop=frame[int(y1):int(y2),int(x1):int(x2),:] #OpenCv Slicing under this format : image[y_start:y_end, x_start:x_end, channels]
-
-            #process license plate
-            license_plate_crop_gray=cv2.cvtColor(license_plate_crop,cv2.COLOR_BGR2GRAY) #Convert BGR color to GrayScale
-            _,license_plate_crop_thresh=cv2.threshold(license_plate_crop_gray,64,255,cv2.THRESH_BINARY_INV) #Convert to black and white
-
-            #read license plate number
-            license_plate_text,license_plate_text_score=read_license_plate(license_plate_crop_thresh)
+        if ret:
+            results[frame_nmr]={}
+            #detect vehicles
+            detections=coco_model(frame)[0]
+            detections_=[]
+            for detection in detections.boxes.data.tolist():
+                x1,y1,x2,y2,score,class_id=detection
+                if int(class_id) in vehicles:
+                    detections_.append([x1,y1,x2,y2,score])
             
-            if license_plate_text:
-                plate_detections.append((license_plate_text,score))
-            
-            if frame_nmr%10==0 and license_plate_text:
-                # Count occurrences of each plate
-                plate_counts = Counter(plate for plate, _ in plate_detections)
+            #track vehicles
+            track_ids=mot_tracker.update(np.asarray(detections_)) #it will match the new detections to the existing objects
 
-                # Get the most frequent plate
-                most_frequent_plate,occurance_count = plate_counts.most_common(1)[0]
+            #detect license plates
+            license_plates=license_plate_detector(frame)[0]
+            for license_plate in license_plates.boxes.data.tolist():
+                x1,y1,x2,y2,score,class_id=license_plate
 
-                # Get the highest confidence score for that plate
-                highest_score = max(score for plate, score in plate_detections if plate == most_frequent_plate)
+                #filter low confidence plates
+                if score<0.5:
+                    continue
 
-                # Check if the plate exists
-                sql_check = "SELECT COUNT(*) FROM users WHERE plate_number = %s"
-                cursor.execute(sql_check, (most_frequent_plate,))
-                exists = cursor.fetchone()[0]  # Get count
+                #assign license plate to car 
+                xcar1,ycar1,xcar2,ycar2,car_id=get_car(license_plate,track_ids)
 
-                if highest_score>0.5 and occurance_count>4 and exists==0:
+                #crop license plate
+                license_plate_crop=frame[int(y1):int(y2),int(x1):int(x2),:] #OpenCv Slicing under this format : image[y_start:y_end, x_start:x_end, channels]
 
-                    # Insert only if it doesn't exist
-                    sql_insert = "INSERT INTO users (plate_number) VALUES (%s)"
-                    cursor.execute(sql_insert, (most_frequent_plate,))
-                    conn.commit()
-                plate_detections.clear()
+                #process license plate
+                license_plate_crop_gray=cv2.cvtColor(license_plate_crop,cv2.COLOR_BGR2GRAY) #Convert BGR color to GrayScale
+                _,license_plate_crop_thresh=cv2.threshold(license_plate_crop_gray,64,255,cv2.THRESH_BINARY_INV) #Convert to black and white
 
-            if license_plate_text is not None:
-                results[frame_nmr][car_id]={'car': {'bbox': [xcar1, ycar1, xcar2, ycar2]},
-                                            'license_plate': {'bbox': [x1, y1, x2, y2],
-                                            'text': license_plate_text,
-                                            'bbox_score': score,
-                                            'text_score': license_plate_text_score}}
+                #read license plate number
+                license_plate_text,license_plate_text_score=read_license_plate(license_plate_crop_thresh)
                 
-            # write results
-            write_csv(results, r'E:\AutoParkAI\plateDetection\raw_data.csv')
+                if license_plate_text:
+                    plate_detections.append((license_plate_text,score))
+                
+                if frame_nmr%10==0 and license_plate_text:
+                    # Count occurrences of each plate
+                    plate_counts = Counter(plate for plate, _ in plate_detections)
+
+                    # Get the most frequent plate
+                    most_frequent_plate,occurance_count = plate_counts.most_common(1)[0]
+
+                    # Get the highest confidence score for that plate
+                    highest_score = max(score for plate, score in plate_detections if plate == most_frequent_plate)
+
+                    # Check if the plate exists
+                    sql_check = "SELECT COUNT(*) FROM users WHERE plate_number = %s"
+                    cursor.execute(sql_check, (most_frequent_plate,))
+                    exists = cursor.fetchone()[0]  # Get count
+
+                    if highest_score>0.5 and occurance_count>4 and exists==0:
+
+                        # Insert only if it doesn't exist
+                        sql_insert = "INSERT INTO users (plate_number) VALUES (%s)"
+                        cursor.execute(sql_insert, (most_frequent_plate,))
+                        conn.commit()
+
+                        latest_plate = most_frequent_plate
+                    plate_detections.clear()
+
+                if license_plate_text is not None:
+                    results[frame_nmr][car_id]={'car': {'bbox': [xcar1, ycar1, xcar2, ycar2]},
+                                                'license_plate': {'bbox': [x1, y1, x2, y2],
+                                                'text': license_plate_text,
+                                                'bbox_score': score,
+                                                'text_score': license_plate_text_score}}
+                    
+                # write results
+                write_csv(results, r'E:\AutoParkAI\plateDetection\raw_data.csv')
+
+def run_flask():
+    app.run(host='0.0.0.0', port=5000)
+
+flask_thread = Thread(target=run_flask)
+flask_thread.daemon = True
+flask_thread.start()
+
+run_video_processing()
