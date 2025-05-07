@@ -12,8 +12,12 @@ function ActivityLogs() {
         try {
             const response = await fetch('http://localhost:5000/latest-plate');
             const data = await response.json();
-            if (data.plate_number && !plates.find(p => p.plate === data.plate_number)) {
-                setPlates(prev => [...prev, { plate: data.plate_number, time: new Date().toLocaleTimeString() }]);
+            const newPlate = data.plate_number;
+
+            if (newPlate &&(plates.length === 0 || plates[plates.length - 1].plate !== newPlate)) {
+                const newEntry = { plate: newPlate, time: data.entry_time };
+                const updatedPlates = [...plates, newEntry];
+
                 // Save to state and localStorage
                 setPlates(updatedPlates);
                 localStorage.setItem("plates", JSON.stringify(updatedPlates));
@@ -28,10 +32,10 @@ function ActivityLogs() {
 
         const interval = setInterval(() => {
             fetchLatestPlate();
-        }, 5000); // every 5 seconds
+        }, 5000);
 
         return () => clearInterval(interval);
-    }, [plates]); // include plates to avoid stale closure
+    }, [plates]);
 
     return (
         <section className="logs-container">

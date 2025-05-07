@@ -15,9 +15,10 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 latest_plate = None  # Global variable to store latest detected plate
+latest_entry_time=None
 @app.route('/latest-plate', methods=['GET'])
 def get_latest_plate():
-    response = make_response(jsonify({"plate_number": latest_plate or None}))
+    response = make_response(jsonify({"plate_number": latest_plate or None,"entry_time": latest_entry_time or None}))
     response.headers["Cache-Control"] = "no-cache"
     return response
 
@@ -45,6 +46,7 @@ plate_detections = []
 
 def run_video_processing():
     global latest_plate
+    global latest_entry_time
 
     #read frames
     frame_nmr=-1
@@ -116,19 +118,23 @@ def run_video_processing():
 
                         # Insert only if it doesn't exist
                         sql_insert = "INSERT INTO users (plate_number, entry_time) VALUES (%s,%s)"
-                        cursor.execute(sql_insert, (most_frequent_plate,datetime.now()))
+                        entry_time=datetime.now()
+                        cursor.execute(sql_insert, (most_frequent_plate,entry_time))
                         conn.commit()
 
                         latest_plate = most_frequent_plate
+                        latest_entry_time=entry_time
                     
                     elif highest_score>0.5 and occurance_count>4 and row is not None and row[3] is not None:
 
                         # Insert only if the car is going to enter for another time
                         sql_insert = "INSERT INTO users (plate_number, entry_time) VALUES (%s,%s)"
-                        cursor.execute(sql_insert, (most_frequent_plate,datetime.now()))
+                        entry_time=datetime.now()
+                        cursor.execute(sql_insert, (most_frequent_plate,entry_time))
                         conn.commit()
 
                         latest_plate = most_frequent_plate
+                        latest_entry_time=entry_time
 
                     plate_detections.clear()
 
