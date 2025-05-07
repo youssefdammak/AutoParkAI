@@ -10,6 +10,7 @@ from flask import Flask, jsonify, make_response
 from threading import Thread
 from collections import Counter
 from flask_cors import CORS
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -107,18 +108,28 @@ def run_video_processing():
                     highest_score = max(score for plate, score in plate_detections if plate == most_frequent_plate)
 
                     # Check if the plate exists
-                    sql_check = "SELECT COUNT(*) FROM users WHERE plate_number = %s"
+                    sql_check = "SELECT * FROM users WHERE plate_number = %s ORDER BY entry_time DESC LIMIT 1"
                     cursor.execute(sql_check, (most_frequent_plate,))
-                    exists = cursor.fetchone()[0]  # Get count
+                    row=cursor.fetchone()
 
-                    if highest_score>0.5 and occurance_count>4 and exists==0:
+                    if highest_score>0.5 and occurance_count>4 and row is None:
 
                         # Insert only if it doesn't exist
-                        sql_insert = "INSERT INTO users (plate_number) VALUES (%s)"
-                        cursor.execute(sql_insert, (most_frequent_plate,))
+                        sql_insert = "INSERT INTO users (plate_number, entry_time) VALUES (%s,%s)"
+                        cursor.execute(sql_insert, (most_frequent_plate,datetime.now()))
                         conn.commit()
 
                         latest_plate = most_frequent_plate
+
+                    elif highest_score>0.5 and occurance_count>4 and row is not None and row[3] is not None:
+
+                        # Insert only if the car is going to enter for another time
+                        sql_insert = "INSERT INTO users (plate_number, entry_time) VALUES (%s,%s)"
+                        cursor.execute(sql_insert, (most_frequent_plate,datetime.now()))
+                        conn.commit()
+
+                        latest_plate = most_frequent_plate
+
                     plate_detections.clear()
 
                 if license_plate_text is not None:
