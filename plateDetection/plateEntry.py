@@ -120,7 +120,7 @@ def run_video_processing():
                         conn.commit()
 
                         latest_plate = most_frequent_plate
-
+                    
                     elif highest_score>0.5 and occurance_count>4 and row is not None and row[3] is not None:
 
                         # Insert only if the car is going to enter for another time

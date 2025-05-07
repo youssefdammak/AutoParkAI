@@ -2,14 +2,21 @@ import { useState, useEffect } from 'react';
 import './ActivityLogs.css';
 
 function ActivityLogs() {
-    const [plates, setPlates] = useState([]);
+    const [plates, setPlates] = useState(() => {
+        // Load from localStorage initially
+        const saved = localStorage.getItem("plates");
+        return saved ? JSON.parse(saved) : [];
+    });
 
     const fetchLatestPlate = async () => {
         try {
             const response = await fetch('http://localhost:5000/latest-plate');
             const data = await response.json();
-            if (data.plate_number) {
+            if (data.plate_number && !plates.find(p => p.plate === data.plate_number)) {
                 setPlates(prev => [...prev, { plate: data.plate_number, time: new Date().toLocaleTimeString() }]);
+                // Save to state and localStorage
+                setPlates(updatedPlates);
+                localStorage.setItem("plates", JSON.stringify(updatedPlates));
             }
         } catch (error) {
             console.error("Error fetching plate:", error);
