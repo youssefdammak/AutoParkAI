@@ -18,7 +18,7 @@ latest_plate = None  # Global variable to store latest detected plate
 latest_entry_time=None
 @app.route('/latest-plate', methods=['GET'])
 def get_latest_plate():
-    response = make_response(jsonify({"plate_number": latest_plate or None,"entry_time": latest_entry_time or None, "status":"Entry"}))
+    response = make_response(jsonify({"plate_number": latest_plate or None,"entry_time": latest_entry_time or None, "status":"Exit"}))
     response.headers["Cache-Control"] = "no-cache"
     return response
 
@@ -113,28 +113,20 @@ def run_video_processing():
                     sql_check = "SELECT * FROM users WHERE plate_number = %s ORDER BY entry_time DESC LIMIT 1"
                     cursor.execute(sql_check, (most_frequent_plate,))
                     row=cursor.fetchone()
-
-                    if highest_score>0.5 and occurance_count>4 and row is None:
-
-                        # Insert only if it doesn't exist
-                        sql_insert = "INSERT INTO users (plate_number, entry_time) VALUES (%s,%s)"
-                        entry_time=datetime.now()
-                        cursor.execute(sql_insert, (most_frequent_plate,entry_time))
-                        conn.commit()
-
-                        latest_plate = most_frequent_plate
-                        latest_entry_time=entry_time
                     
-                    elif highest_score>0.5 and occurance_count>4 and row is not None and row[3] is not None:
+                    if highest_score>0.5 and occurance_count>4 and row is not None and row[3] is None:
 
-                        # Insert only if the car is going to enter for another time
-                        sql_insert = "INSERT INTO users (plate_number, entry_time) VALUES (%s,%s)"
-                        entry_time=datetime.now()
-                        cursor.execute(sql_insert, (most_frequent_plate,entry_time))
+                        sql_insert = """
+                            UPDATE users
+                            SET exit_time = %s
+                            WHERE plate_number = %s;
+                        """
+                        exit_time=datetime.now()
+                        cursor.execute(sql_insert, (exit_time,most_frequent_plate))
                         conn.commit()
 
                         latest_plate = most_frequent_plate
-                        latest_entry_time=entry_time
+                        latest_entry_time=exit_time
 
                     plate_detections.clear()
 
@@ -149,7 +141,7 @@ def run_video_processing():
                 write_csv(results, r'E:\AutoParkAI\plateDetection\raw_data.csv')
 
 def run_flask():
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5001)
 
 flask_thread = Thread(target=run_flask)
 flask_thread.daemon = True
