@@ -53,6 +53,7 @@ function ActivityLogs() {
             const updatedPlates = [...latestPlatesRef.current, ...newEntries];
             setPlates(updatedPlates);
             localStorage.setItem("plates", JSON.stringify(updatedPlates));
+            window.dispatchEvent(new Event('platesUpdated'));
         }
     };
 
