@@ -1,20 +1,19 @@
-import Header from './components/Header/Header.jsx'
-import Hero from './components/Hero/Hero.jsx'
-import Dashboard from './components/Dashboard/Dashboard.jsx'
-import LiveFeed from './components/LiveFeed/LiveFeed.jsx'
-import ActivityLogs from './components/ActivityLogs/ActivityLogs.jsx'
+import Home from '/src/pages/Home.jsx';
+import Account from '/src/pages/Account.jsx';
+import Login from '/src/components/Login/Login.jsx';
+import Register from '/src/components/Register/Register.jsx';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 function App() {
-  return(
-    <div className='app'>
-        <Header></Header>
-        <div className="main-container">
-            <Hero></Hero>
-            <Dashboard></Dashboard>
-            <LiveFeed></LiveFeed>
-            <ActivityLogs></ActivityLogs>
-        </div>
-    </div>
+  return (
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path="/account" element={<Account />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
+      </Routes>
   );
 }
 
-export default App
+export default App;
