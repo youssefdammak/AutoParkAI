@@ -5,11 +5,12 @@ function Register(){
         <div className='login-bg'>
             <div className='login-box'>
                 <h2>Register</h2>
-                <form action="">
-                    <input type="text" placeholder="Username" required />
-                    <input type="password" placeholder="Password" required />
+                <form action="http://localhost:5002/api/register" method='POST'>
+                    <input type="text" name="username" placeholder="Username" required />
+                    <input type="email" name='email' placeholder="E-Mail" required />
+                    <input type="password" name='password' placeholder="Password" required />
                     <input type="password" placeholder="Re-Type Password" required />
-                    <input type="text" placeholder="Car Plate Number" required />
+                    <input type="text" name='plate_number' placeholder="Car Plate Number" required />
                     <button type="submit">Sign Up</button>
                 </form>
                 <p className="signup-link">

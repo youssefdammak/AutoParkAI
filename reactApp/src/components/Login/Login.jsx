@@ -5,9 +5,9 @@ function Login(){
         <div className='login-bg'>
             <div className='login-box'>
                 <h2>Login</h2>
-                <form action="">
-                    <input type="text" placeholder="Username" required />
-                    <input type="password" placeholder="Password" required />
+                <form action="http://localhost:5002/api/login" method='POST'>
+                    <input type="text" name='username' placeholder="Username" required />
+                    <input type="password" name='password' placeholder="Password" required />
                     <button type="submit">Log In</button>
                 </form>
                 <p className="signup-link">

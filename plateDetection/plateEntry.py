@@ -110,14 +110,14 @@ def run_video_processing():
                     highest_score = max(score for plate, score in plate_detections if plate == most_frequent_plate)
 
                     # Check if the plate exists
-                    sql_check = "SELECT * FROM users WHERE plate_number = %s ORDER BY entry_time DESC LIMIT 1"
+                    sql_check = "SELECT * FROM ParkingActivity WHERE plate_number = %s ORDER BY entry_time DESC LIMIT 1"
                     cursor.execute(sql_check, (most_frequent_plate,))
                     row=cursor.fetchone()
 
                     if highest_score>0.5 and occurance_count>4 and row is None:
 
                         # Insert only if it doesn't exist
-                        sql_insert = "INSERT INTO users (plate_number, entry_time) VALUES (%s,%s)"
+                        sql_insert = "INSERT INTO ParkingActivity (plate_number, entry_time) VALUES (%s,%s)"
                         entry_time=datetime.now()
                         cursor.execute(sql_insert, (most_frequent_plate,entry_time))
                         conn.commit()
@@ -128,7 +128,7 @@ def run_video_processing():
                     elif highest_score>0.5 and occurance_count>4 and row is not None and row[3] is not None:
 
                         # Insert only if the car is going to enter for another time
-                        sql_insert = "INSERT INTO users (plate_number, entry_time) VALUES (%s,%s)"
+                        sql_insert = "INSERT INTO ParkingActivity (plate_number, entry_time) VALUES (%s,%s)"
                         entry_time=datetime.now()
                         cursor.execute(sql_insert, (most_frequent_plate,entry_time))
                         conn.commit()
