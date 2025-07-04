@@ -1,188 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoParkAI</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="index.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AutoParkAI - Profile</title>
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <div class="logo">
-                <i class="fas fa-parking"></i>
-                <div>
-                    <h1>AutoParkAI</h1>
-                    <p>Smart Parking Management</p>
-                </div>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="#"><i class="fas fa-map-marker-alt"></i> Parking Map</a></li>
-                    <li><a href="#"><i class="fas fa-history"></i> History</a></li>
-                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                    <li><a href="#"><i class="fas fa-user"></i> Account</a></li>
-                </ul>
-            </nav>
+  <header>
+    <div class="header-container">
+      <div class="logo">
+        <i class="fas fa-parking"></i>
+        <div>
+          <h1>AutoParkAI</h1>
+          <p>Smart Parking Management</p>
         </div>
-    </header>
-
-    <div class="main-container">
-        <section class="hero">
-            <h2>Revolutionary Smart Parking Solution</h2>
-            <p>Experience seamless parking with our AI-powered system that guides you to available spots in real-time and helps you find your car effortlessly.</p>
-            <div class="cta-buttons">
-                <button class="cta-button">
-                    <i class="fas fa-car"></i> Check Availability
-                </button>
-                <button class="cta-button outline">
-                    <i class="fas fa-directions"></i> Get Directions
-                </button>
-            </div>
-        </section>
-
-        <section class="dashboard">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Parking Availability</h3>
-                    <div class="card-icon">
-                        <i class="fas fa-parking"></i>
-                    </div>
-                </div>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-value available" id="available-spots">42</div>
-                        <div class="stat-label">Available</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value occupied" id="occupied-spots">58</div>
-                        <div class="stat-label">Occupied</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="total-spots">100</div>
-                        <div class="stat-label">Total</div>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Today's Activity</h3>
-                    <div class="card-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                </div>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-value">124</div>
-                        <div class="stat-label">Entries</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">98</div>
-                        <div class="stat-label">Exits</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">86%</div>
-                        <div class="stat-label">Capacity</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Average Stay</h3>
-                    <div class="card-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                </div>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-value">2h 15m</div>
-                        <div class="stat-label">Today</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">1h 52m</div>
-                        <div class="stat-label">Yesterday</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">2h 04m</div>
-                        <div class="stat-label">Weekly Avg</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="live-feed-container">
-            <div class="live-feed-header">
-                <h3 class="card-title"><i class="fas fa-video"></i> Live Parking Feed</h3>
-                <div class="card-actions">
-                    <button class="cta-button outline">
-                        <i class="fas fa-sync-alt"></i> Switch View
-                    </button>
-                </div>
-            </div>
-            <div class="live-feed">
-                <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Parking lot view">
-                <div class="live-feed-overlay">
-                    <i class="fas fa-video"></i>
-                    <p>Live Parking Lot View</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="logs-container">
-            <div class="logs-header">
-                <h3 class="card-title"><i class="fas fa-list"></i> Recent Activity</h3>
-                <div class="card-actions">
-                    <button class="cta-button outline small" onclick="refreshLogs()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                </div>
-            </div>
-            <div id="activityLogs">
-                <div class="log-item">
-                    <div class="log-plate">
-                        <i class="fas fa-car"></i>
-                        ABC1234
-                    </div>
-                    <div class="log-time">12:45 PM</div>
-                    <div class="log-status entry">Entry</div>
-                </div>
-                <div class="log-item">
-                    <div class="log-plate">
-                        <i class="fas fa-car"></i>
-                        XYZ7890
-                    </div>
-                    <div class="log-time">12:38 PM</div>
-                    <div class="log-status exit">Exit</div>
-                </div>
-                <div class="log-item">
-                    <div class="log-plate">
-                        <i class="fas fa-car"></i>
-                        DEF4567
-                    </div>
-                    <div class="log-time">12:25 PM</div>
-                    <div class="log-status entry">Entry</div>
-                </div>
-                <div class="log-item">
-                    <div class="log-plate">
-                        <i class="fas fa-car"></i>
-                        GHI8910
-                    </div>
-                    <div class="log-time">12:18 PM</div>
-                    <div class="log-status exit">Exit</div>
-                </div>
-                <div class="log-item">
-                    <div class="log-plate">
-                        <i class="fas fa-car"></i>
-                        JKL2345
-                    </div>
-                    <div class="log-time">12:05 PM</div>
-                    <div class="log-status entry">Entry</div>
-                </div>
-            </div>
-        </section>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+          <li><a href="#"><i class="fas fa-history"></i> History</a></li>
+          <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+      </nav>
     </div>
+  </header>
+
+  <div class="main-container">
+    <section class="dashboard">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Welcome, John Doe</h3>
+          <div class="card-icon">
+            <i class="fas fa-user-circle"></i>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value">ABC1234</div>
+            <div class="stat-label">Plate Number</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">Gold</div>
+            <div class="stat-label">Membership</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">10</div>
+            <div class="stat-label">Visits This Month</div>
+          </div>
+        </div>
+      </div>
+      
+
+      <!-- User Activity Graph -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Weekly Parking Activity</h3>
+          <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+        </div>
+        <canvas id="activityChart" height="100"></canvas>
+      </div>
+      
+
+      <!-- Recent Payments -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Recent Payments</h3>
+          <div class="card-icon">
+            <i class="fas fa-file-invoice-dollar"></i>
+          </div>
+        </div>
+        <div class="log-item">
+          <div class="log-plate"><i class="fas fa-car"></i> ABC1234</div>
+          <div class="log-time">July 2, 2025</div>
+          <div class="log-status entry">$5.00</div>
+        </div>
+        <div class="log-item">
+          <div class="log-plate"><i class="fas fa-car"></i> XYZ7890</div>
+          <div class="log-time">June 30, 2025</div>
+          <div class="log-status entry">$7.00</div>
+        </div>
+      </div>
+
+      <!-- Payment Summary -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Amount Due</h3>
+          <div class="card-icon">
+            <i class="fas fa-credit-card"></i>
+          </div>
+        </div>
+        <div class="stats" style="justify-content: center; margin-bottom: 1rem;">
+          <div class="stat-item">
+            <div class="stat-value" style="color: var(--danger); font-size: 2rem;">$12.50</div>
+            <div class="stat-label">Current Balance</div>
+          </div>
+        </div>
+        <button class="cta-button" style="width: 100%;">
+          <i class="fas fa-paper-plane"></i> Pay Now
+        </button>
+      </div>
+
+      <!-- Real-Time Parking Status -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Parking Status</h3>
+          <div class="card-icon"><i class="fas fa-traffic-light"></i></div>
+        </div>
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value" style="color: green;">Inside</div>
+            <div class="stat-label">Current Status</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">10:45 AM</div>
+            <div class="stat-label">Last Entry</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parking Spot History -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Recent Parking Sessions</h3>
+          <div class="card-icon"><i class="fas fa-history"></i></div>
+        </div>
+        <table style="width: 100%; font-size: 0.9rem;">
+          <thead>
+            <tr style="text-align: left;">
+              <th>Spot</th>
+              <th>Entry</th>
+              <th>Exit</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A12</td>
+              <td>09:12 AM</td>
+              <td>11:45 AM</td>
+              <td>2h 33m</td>
+            </tr>
+            <tr>
+              <td>B03</td>
+              <td>02:00 PM</td>
+              <td>04:10 PM</td>
+              <td>2h 10m</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Account Actions -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Manage Account</h3>
+          <div class="card-icon"><i class="fas fa-user-cog"></i></div>
+        </div>
+        <div class="stats" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+          <button class="cta-button outline"><i class="fas fa-edit"></i> Edit Profile</button>
+          <button class="cta-button outline"><i class="fas fa-key"></i> Change Password</button>
+          <button class="cta-button outline danger"><i class="fas fa-trash"></i> Delete Account</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    const activityChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Parking Entries',
+          data: [2, 3, 1, 10, 2, 0, 1], // Example data (fetch dynamically later)
+          backgroundColor: 'rgba(67, 97, 238, 0.6)',
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+        }
+      }
+    });
+  </script>
 </body>
 </html>

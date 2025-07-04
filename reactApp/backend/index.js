@@ -2,26 +2,41 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 
 const app = express();
 const PORT = 5002;
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended : true}));
 require('dotenv').config();
 
 const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 db.connect(err => {
     if (err) throw err;
     console.log('Connected to MySql Database');
 });
+
+const sessionStore = new MySQLStore({}, db.promise());
+
+app.use(session({
+  secret: 'your_secret_here',
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore,
+  cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 } // 1h
+}));
 
 app.post('/api/register', async (req,res)=>{
     const { username, password, email, plate_number }=req.body;
@@ -58,9 +73,22 @@ app.post('/api/login', (req,res)=>{
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
+        req.session.userId=user.id;
+
         res.json({ message: 'Login successful', user: { id: user.id, username: user.username } });
     });
 });
+
+app.get('/api/profile', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ message: 'Not logged in' });
+
+  const sql = 'SELECT username, plate_number, email FROM Users WHERE id = ?';
+  db.query(sql, [req.session.userId], (err, results) => {
+    if (err || results.length === 0) return res.status(500).json({ message: 'Failed to fetch user' });
+    res.json({ user: results[0] });
+  });
+});
+
 
 app.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`)

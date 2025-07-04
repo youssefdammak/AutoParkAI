@@ -1,10 +1,12 @@
 import './Login.css';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,6 +20,7 @@ function Login() {
     try {
       const res = await fetch('http://localhost:5002/api/login', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -31,6 +34,7 @@ function Login() {
       } else {
         setSuccess('Login successful');
         console.log(data.user);
+        navigate('/Profile');
       }
     } catch (err) {
       setError('Network error');

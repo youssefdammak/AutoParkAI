@@ -2,7 +2,8 @@ import Home from '/src/pages/Home.jsx';
 import Account from '/src/pages/Account.jsx';
 import Login from '/src/components/Login/Login.jsx';
 import Register from '/src/components/Register/Register.jsx';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Profile from '/src/pages/Profile.jsx';
+import {Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>
+        <Route path='/profile' element={<Profile/>}/>
       </Routes>
   );
 }
