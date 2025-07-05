@@ -115,11 +115,18 @@ def run_video_processing():
                     row=cursor.fetchone()
 
                     if highest_score>0.5 and occurance_count>4 and row is None:
+                        
+                        #Find user ID from plate number
+                        sql_get_user = "SELECT id FROM Users WHERE plate_number = %s"
+                        cursor.execute(sql_get_user, (most_frequent_plate,))
+                        user_row = cursor.fetchone()
+
+                        user_id = user_row[0] if user_row else None
 
                         # Insert only if it doesn't exist
-                        sql_insert = "INSERT INTO ParkingActivity (plate_number, entry_time) VALUES (%s,%s)"
+                        sql_insert = "INSERT INTO ParkingActivity (user_id, plate_number, entry_time) VALUES (%s,%s,%s)"
                         entry_time=datetime.now()
-                        cursor.execute(sql_insert, (most_frequent_plate,entry_time))
+                        cursor.execute(sql_insert, (user_id,most_frequent_plate,entry_time))
                         conn.commit()
 
                         latest_plate = most_frequent_plate
@@ -127,10 +134,17 @@ def run_video_processing():
                     
                     elif highest_score>0.5 and occurance_count>4 and row is not None and row[3] is not None:
 
-                        # Insert only if the car is going to enter for another time
-                        sql_insert = "INSERT INTO ParkingActivity (plate_number, entry_time) VALUES (%s,%s)"
+                        #Find user ID from plate number
+                        sql_get_user = "SELECT id FROM Users WHERE plate_number = %s"
+                        cursor.execute(sql_get_user, (most_frequent_plate,))
+                        user_row = cursor.fetchone()
+
+                        user_id = user_row[0] if user_row else None
+
+                        # Insert only if it doesn't exist
+                        sql_insert = "INSERT INTO ParkingActivity (user_id, plate_number, entry_time) VALUES (%s,%s,%s)"
                         entry_time=datetime.now()
-                        cursor.execute(sql_insert, (most_frequent_plate,entry_time))
+                        cursor.execute(sql_insert, (user_id,most_frequent_plate,entry_time))
                         conn.commit()
 
                         latest_plate = most_frequent_plate
