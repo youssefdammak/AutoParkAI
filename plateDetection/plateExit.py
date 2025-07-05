@@ -116,6 +116,13 @@ def run_video_processing():
                     
                     if highest_score>0.5 and occurance_count>4 and row is not None and row[4] is None:
 
+                        #Find user ID from plate number
+                        sql_get_user = "SELECT id FROM Users WHERE plate_number = %s"
+                        cursor.execute(sql_get_user, (most_frequent_plate,))
+                        user_row = cursor.fetchone()
+
+                        user_id = user_row[0] if user_row else None
+
                         exit_time = datetime.now()
                         entry_time = row[3]
 
@@ -134,6 +141,10 @@ def run_video_processing():
                         """
                         exit_time=datetime.now()
                         cursor.execute(sql_insert, (exit_time, amount, most_frequent_plate, entry_time))
+                        conn.commit()
+
+                        sql_insert = "INSERT INTO Payments (user_id, amount) VALUES (%s, %s)"
+                        cursor.execute(sql_insert, (user_id, amount))
                         conn.commit()
 
                         latest_plate = most_frequent_plate
