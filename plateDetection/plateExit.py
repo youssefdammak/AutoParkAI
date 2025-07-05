@@ -114,7 +114,7 @@ def run_video_processing():
                     cursor.execute(sql_check, (most_frequent_plate,))
                     row=cursor.fetchone()
                     
-                    if highest_score>0.5 and occurance_count>4 and row is not None and row[3] is None:
+                    if highest_score>0.5 and occurance_count>4 and row is not None and row[4] is None:
 
                         sql_insert = """
                             UPDATE ParkingActivity

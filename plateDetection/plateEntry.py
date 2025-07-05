@@ -115,7 +115,7 @@ def run_video_processing():
                     row=cursor.fetchone()
 
                     if highest_score>0.5 and occurance_count>4 and row is None:
-                        
+
                         #Find user ID from plate number
                         sql_get_user = "SELECT id FROM Users WHERE plate_number = %s"
                         cursor.execute(sql_get_user, (most_frequent_plate,))
@@ -132,7 +132,7 @@ def run_video_processing():
                         latest_plate = most_frequent_plate
                         latest_entry_time=entry_time
                     
-                    elif highest_score>0.5 and occurance_count>4 and row is not None and row[3] is not None:
+                    elif highest_score>0.5 and occurance_count>4 and row is not None and row[4] is not None:
 
                         #Find user ID from plate number
                         sql_get_user = "SELECT id FROM Users WHERE plate_number = %s"
