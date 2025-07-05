@@ -116,13 +116,24 @@ def run_video_processing():
                     
                     if highest_score>0.5 and occurance_count>4 and row is not None and row[4] is None:
 
+                        exit_time = datetime.now()
+                        entry_time = row[3]
+
+                        # Calculate duration in hours
+                        duration_hours = (exit_time - entry_time).total_seconds() / 3600
+
+                        # Set a rate (e.g., $2/hour)
+                        rate = 2.00
+                        amount = round(duration_hours * rate, 2)
+
                         sql_insert = """
                             UPDATE ParkingActivity
-                            SET exit_time = %s
-                            WHERE plate_number = %s;
+                            SET exit_time = %s,
+                                amount = %s
+                            WHERE plate_number = %s AND entry_time = %s;
                         """
                         exit_time=datetime.now()
-                        cursor.execute(sql_insert, (exit_time,most_frequent_plate))
+                        cursor.execute(sql_insert, (exit_time, amount, most_frequent_plate, entry_time))
                         conn.commit()
 
                         latest_plate = most_frequent_plate
