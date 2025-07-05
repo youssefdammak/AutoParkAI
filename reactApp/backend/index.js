@@ -89,6 +89,32 @@ app.get('/api/profile', (req, res) => {
   });
 });
 
+app.get('/api/parking-status/:plate', async (req, res) => {
+  const plate = req.params.plate;
+
+  try {
+    const [rows] = await db.promise().query(
+      `SELECT entry_time, exit_time 
+       FROM ParkingActivity 
+       WHERE plate_number = ? 
+       ORDER BY entry_time DESC 
+       LIMIT 1`,
+      [plate]
+    );
+
+    if (rows.length === 0) {
+      return res.json({ status: 'Unknown', lastEntry: null });
+    }
+
+    const row = rows[0];
+    const status = row.exit_time ? 'Outside' : 'Inside';
+    res.json({ status, lastEntry: row.entry_time });
+
+  } catch (err) {
+    console.error('Error fetching parking status:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 app.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`)

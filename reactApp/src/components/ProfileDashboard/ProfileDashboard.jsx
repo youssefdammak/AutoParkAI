@@ -5,6 +5,8 @@ import Chart from 'chart.js/auto';
 function ProfileDashboard() {
     const [user, setUser] = useState(null);
 
+    const [parkingStatus, setParkingStatus] = useState({ status: '', lastEntry: '' });
+
     useEffect(() => {
         fetch('http://localhost:5002/api/profile', {
             credentials: 'include'
@@ -15,6 +17,16 @@ function ProfileDashboard() {
             setUser(data.user);
         });
     }, []);
+
+    useEffect(() => {
+    if (user?.plate_number) {
+        fetch(`http://localhost:5002/api/parking-status/${user.plate_number}`)
+        .then(res => res.json())
+        .then(data => {
+            setParkingStatus(data);
+        });
+    }
+    }, [user]);
 
     useEffect(() => {
         const ctx = document.getElementById('activityChart');
@@ -124,11 +136,13 @@ function ProfileDashboard() {
             </div>
             <div className="stats">
                 <div className="stat-item">
-                <div className="stat-value" style={{ color: 'green' }}>Inside</div>
+                <div className="stat-value" style={{ color: parkingStatus.status === 'Inside' ? '#2ecc71' : 'var(--danger)' }}>
+                    {parkingStatus.status}
+                </div>
                 <div className="stat-label">Current Status</div>
                 </div>
                 <div className="stat-item">
-                <div className="stat-value">10:45 AM</div>
+                <div className="stat-value">{new Date(parkingStatus.lastEntry).toLocaleTimeString()}</div>
                 <div className="stat-label">Last Entry</div>
                 </div>
             </div>
