@@ -110,14 +110,14 @@ def run_video_processing():
                     highest_score = max(score for plate, score in plate_detections if plate == most_frequent_plate)
 
                     # Check if the plate exists
-                    sql_check = "SELECT * FROM users WHERE plate_number = %s ORDER BY entry_time DESC LIMIT 1"
+                    sql_check = "SELECT * FROM ParkingActivity WHERE plate_number = %s ORDER BY entry_time DESC LIMIT 1"
                     cursor.execute(sql_check, (most_frequent_plate,))
                     row=cursor.fetchone()
                     
                     if highest_score>0.5 and occurance_count>4 and row is not None and row[3] is None:
 
                         sql_insert = """
-                            UPDATE users
+                            UPDATE ParkingActivity
                             SET exit_time = %s
                             WHERE plate_number = %s;
                         """
