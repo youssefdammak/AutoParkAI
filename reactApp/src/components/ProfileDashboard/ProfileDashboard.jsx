@@ -7,6 +7,8 @@ function ProfileDashboard() {
 
     const [parkingStatus, setParkingStatus] = useState({ status: '', lastEntry: '' });
 
+    const [amountDue, setAmountDue] = useState(0);
+
     useEffect(() => {
         fetch('http://localhost:5002/api/profile', {
             credentials: 'include'
@@ -27,6 +29,42 @@ function ProfileDashboard() {
         });
     }
     }, [user]);
+
+    useEffect(() => {
+    if (user?.plate_number) {
+        fetch(`http://localhost:5002/api/amount-due/${user.id}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            setAmountDue(data.total_due);
+        });
+    }
+    }, [user]);
+
+    const handlePayNow = async () => {
+        try {
+            const res = await fetch(`http://localhost:5002/api/pay/${user.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert('Payment successful!');
+                setAmountDue(0);
+            } 
+            else {
+                alert('Payment failed: ' + data.error);
+            }
+        } catch (err) {
+            alert('Network error');
+            console.error(err);
+        }
+    };
+
 
     useEffect(() => {
         const ctx = document.getElementById('activityChart');
@@ -119,11 +157,11 @@ function ProfileDashboard() {
             </div>
             <div className="stats" style={{ justifyContent: 'center', marginBottom: '1rem' }}>
                 <div className="stat-item">
-                <div className="stat-value" style={{ color: 'var(--danger)', fontSize: '2rem' }}>$12.50</div>
+                <div className="stat-value" style={{ color: amountDue==0 ? '#2ecc71':'var(--danger)', fontSize: '2rem' }}>${amountDue}</div>
                 <div className="stat-label">Current Balance</div>
                 </div>
             </div>
-            <button className="cta-button" style={{ width: '100%' }}>
+            <button className="cta-button" style={{ width: '100%'}} onClick={handlePayNow}>
                 <i className="fas fa-paper-plane"></i> Pay Now
             </button>
             </div>

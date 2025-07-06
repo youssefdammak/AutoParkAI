@@ -82,7 +82,7 @@ app.post('/api/login', (req,res)=>{
 app.get('/api/profile', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ message: 'Not logged in' });
 
-  const sql = 'SELECT username, plate_number, email FROM Users WHERE id = ?';
+  const sql = 'SELECT id, username, plate_number, email FROM Users WHERE id = ?';
   db.query(sql, [req.session.userId], (err, results) => {
     if (err || results.length === 0) return res.status(500).json({ message: 'Failed to fetch user' });
     res.json({ user: results[0] });
@@ -114,6 +114,47 @@ app.get('/api/parking-status/:plate', async (req, res) => {
     console.error('Error fetching parking status:', err);
     res.status(500).json({ error: 'Server error' });
   }
+});
+
+app.get('/api/amount-due/:userId', (req, res) => {
+    const userId = req.params.userId;
+
+    const sql = `
+      SELECT SUM(amount) AS total_due
+      FROM Payments
+      WHERE user_id = ? AND paid = FALSE
+    `;
+
+    db.query(sql, [userId], (err, results) => {
+        if (err) {
+            console.error('SQL error:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        const totalDue = results[0].total_due || 0;
+        res.json({ user_id: userId, total_due: totalDue });
+    });
+});
+
+app.put('/api/pay/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const now = new Date();
+
+    const sql = `
+      UPDATE Payments
+      SET paid = TRUE,
+          payment_time = ?
+      WHERE user_id = ? AND paid = FALSE
+    `;
+
+    db.query(sql, [now, userId], (err, result) => {
+        if (err) {
+            console.error('Payment update error:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        res.json({ success: true, message: 'Payments marked as paid' });
+    });
 });
 
 app.listen(PORT, () => {

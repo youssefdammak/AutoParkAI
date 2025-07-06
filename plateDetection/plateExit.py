@@ -143,8 +143,8 @@ def run_video_processing():
                         cursor.execute(sql_insert, (exit_time, amount, most_frequent_plate, entry_time))
                         conn.commit()
 
-                        sql_insert = "INSERT INTO Payments (user_id, amount) VALUES (%s, %s)"
-                        cursor.execute(sql_insert, (user_id, amount))
+                        sql_insert = "INSERT INTO Payments (user_id, amount, due_time) VALUES (%s, %s, %s)"
+                        cursor.execute(sql_insert, (user_id, amount, exit_time))
                         conn.commit()
 
                         latest_plate = most_frequent_plate
