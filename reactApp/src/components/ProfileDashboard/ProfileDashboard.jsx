@@ -9,6 +9,8 @@ function ProfileDashboard() {
 
     const [amountDue, setAmountDue] = useState(0);
 
+    const [recentPayments, setRecentPayments] = useState([{amount: 0, payment_time: ''},{amount: 0, payment_time: ''}]);
+
     useEffect(() => {
         fetch('http://localhost:5002/api/profile', {
             credentials: 'include'
@@ -39,6 +41,16 @@ function ProfileDashboard() {
             setAmountDue(data.total_due);
         });
     }
+    }, [user]);
+
+    useEffect(() => {
+        if (user?.plate_number){
+            fetch(`http://localhost:5002/api/recentPayments/${user.id}`)
+            .then(res => res.json())
+            .then(data => {
+                setRecentPayments(data);
+            });
+        }
     }, [user]);
 
     const handlePayNow = async () => {
@@ -93,7 +105,7 @@ function ProfileDashboard() {
             }
         });
         }
-    }, []);
+    }, [user]);
     if (!user) return <p>Loading profile...</p>;
     return (
         <div className="main-container">
@@ -136,14 +148,26 @@ function ProfileDashboard() {
                 </div>
             </div>
             <div className="log-item">
-                <div className="log-plate"><i className="fas fa-car"></i> ABC1234</div>
-                <div className="log-time">July 2, 2025</div>
-                <div className="log-status entry">$5.00</div>
+                <div className="log-plate"><i className="fas fa-car"></i> {user.plate_number}</div>
+                <div className="log-time">
+                    {new Date(recentPayments[0].payment_time).toLocaleDateString('en-GB', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    })}
+                </div>
+                <div className="log-status entry">{recentPayments[0].amount}</div>
             </div>
             <div className="log-item">
-                <div className="log-plate"><i className="fas fa-car"></i> XYZ7890</div>
-                <div className="log-time">June 30, 2025</div>
-                <div className="log-status entry">$7.00</div>
+                <div className="log-plate"><i className="fas fa-car"></i> {user.plate_number}</div>
+                <div className="log-time">
+                    {new Date(recentPayments[1].payment_time).toLocaleDateString('en-GB', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    })}
+                </div>
+                <div className="log-status entry">{recentPayments[1].amount}</div>
             </div>
             </div>
 

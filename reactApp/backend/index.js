@@ -157,6 +157,26 @@ app.put('/api/pay/:userId', (req, res) => {
     });
 });
 
+app.get('/api/recentPayments/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+      const [rows] = await db.promise().query(
+        `SELECT amount, payment_time 
+        FROM Payments 
+        WHERE user_id = ? 
+        ORDER BY payment_time DESC 
+        LIMIT 2`,
+        [userId]
+      );
+
+      res.json(rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Database error' });
+  }
+});
+
 app.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`)
 });
