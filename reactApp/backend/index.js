@@ -177,6 +177,24 @@ app.get('/api/recentPayments/:userId', async (req, res) => {
   }
 });
 
+app.get('/api/visitsLastMonth/:userId', async (req,res) =>{
+  const userId = req.params.userId;
+
+  try{
+    const [rows] = await db.promise().query(
+      `SELECT COUNT(*) AS visit_count
+       FROM ParkingActivity
+       WHERE user_id = ? AND entry_time >= NOW() - INTERVAL 30 DAY
+      `,
+      [userId]
+    );
+
+    res.json({visits : rows[0].visit_count});
+  }catch (err){
+    res.status(500).json({ error: 'Database error'});
+  }
+});
+
 app.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`)
 });

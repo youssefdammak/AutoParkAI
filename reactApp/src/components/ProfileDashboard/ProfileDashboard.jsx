@@ -11,6 +11,8 @@ function ProfileDashboard() {
 
     const [recentPayments, setRecentPayments] = useState([{amount: 0, payment_time: ''},{amount: 0, payment_time: ''}]);
 
+    const [visitsLastMonth, setVisitsLastMonth] = useState(0);
+
     useEffect(() => {
         fetch('http://localhost:5002/api/profile', {
             credentials: 'include'
@@ -49,6 +51,16 @@ function ProfileDashboard() {
             .then(res => res.json())
             .then(data => {
                 setRecentPayments(data);
+            });
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (user?.plate_number){
+            fetch(`http://localhost:5002/api/visitsLastMonth/${user.id}`)
+            .then(res => res.json())
+            .then(data => {
+                setVisitsLastMonth(data.visits);
             });
         }
     }, [user]);
@@ -124,7 +136,7 @@ function ProfileDashboard() {
                 <div className="stat-label">Plate Number</div>
                 </div>
                 <div className="stat-item">
-                <div className="stat-value">10</div>
+                <div className="stat-value">{visitsLastMonth}</div>
                 <div className="stat-label">Visits This Month</div>
                 </div>
             </div>
