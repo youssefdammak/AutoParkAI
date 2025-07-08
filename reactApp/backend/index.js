@@ -195,6 +195,28 @@ app.get('/api/visitsLastMonth/:userId', async (req,res) =>{
   }
 });
 
+app.get('/api/weekly-activity/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const [rows] = await db.promise().query(`
+      SELECT 
+        DAYOFWEEK(entry_time) AS dayIndex,
+        DAYNAME(entry_time) AS day,
+        COUNT(*) AS sessions
+      FROM ParkingActivity
+      WHERE user_id = ?
+        AND entry_time >= CURDATE() - INTERVAL 7 DAY
+      GROUP BY dayIndex, day
+      ORDER BY dayIndex
+    `, [userId]);
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching weekly activity:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
 app.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`)
 });

@@ -13,6 +13,16 @@ function ProfileDashboard() {
 
     const [visitsLastMonth, setVisitsLastMonth] = useState(0);
 
+    const [weeklyActivity, setWeeklyActivity] = useState([
+                                                            { day: 'Monday', sessions: 0 },
+                                                            { day: 'Tuesday', sessions: 0 },
+                                                            { day: 'Wednesday', sessions: 0 },
+                                                            { day: 'Thursday', sessions: 0 },
+                                                            { day: 'Friday', sessions: 0 },
+                                                            { day: 'Saturday', sessions: 0 },
+                                                            { day: 'Sunday', sessions: 0 }
+                                                        ]);
+
     useEffect(() => {
         fetch('http://localhost:5002/api/profile', {
             credentials: 'include'
@@ -65,6 +75,16 @@ function ProfileDashboard() {
         }
     }, [user]);
 
+    useEffect(() => {
+        if (user?.plate_number){
+            fetch(`http://localhost:5002/api/weekly-activity/${user.id}`)
+            .then(res => res.json())
+            .then(data => {
+                setWeeklyActivity(data);
+            });
+        }
+    }, [user]);
+
     const handlePayNow = async () => {
         try {
             const res = await fetch(`http://localhost:5002/api/pay/${user.id}`, {
@@ -91,33 +111,34 @@ function ProfileDashboard() {
 
 
     useEffect(() => {
+        if (!weeklyActivity.length) return;
+
         const ctx = document.getElementById('activityChart');
         if (ctx) {
-        new Chart(ctx, {
+            new Chart(ctx, {
             type: 'bar',
             data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            datasets: [{
+                labels: weeklyActivity.map(item => item.day),
+                datasets: [{
                 label: 'Sessions',
-                data: [2, 4, 3, 5, 1, 0, 2],
+                data: weeklyActivity.map(item => item.sessions),
                 backgroundColor: 'rgba(67, 97, 238, 0.6)',
                 borderRadius: 5
-            }],
+                }]
             },
             options: {
-            responsive: true,
-            scales: {
+                responsive: true,
+                scales: {
                 y: {
-                beginAtZero: true,
-                ticks: {
-                    precision: 0
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
                 }
                 }
             }
-            }
-        });
+            });
         }
-    }, [user]);
+    }, [weeklyActivity]);
+
     if (!user) return <p>Loading profile...</p>;
     return (
         <div className="main-container">
