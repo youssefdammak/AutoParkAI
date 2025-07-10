@@ -125,6 +125,7 @@ def run_video_processing():
 
                         exit_time = datetime.now()
                         entry_time = row[3]
+                        parking_spot = row[8]
 
                         # Calculate duration in hours
                         duration_hours = (exit_time - entry_time).total_seconds() / 3600
@@ -141,10 +142,14 @@ def run_video_processing():
                         """
                         exit_time=datetime.now()
                         cursor.execute(sql_insert, (exit_time, amount, most_frequent_plate, entry_time))
-                        conn.commit()
 
+                        # Mark the spot as unoccupied
+                        sql_free_spot = "UPDATE ParkingSpots SET is_occupied = FALSE WHERE spot_label = %s"
+                        cursor.execute(sql_free_spot, (parking_spot,))
+                        
                         sql_insert = "INSERT INTO Payments (user_id, amount, due_time) VALUES (%s, %s, %s)"
                         cursor.execute(sql_insert, (user_id, amount, exit_time))
+
                         conn.commit()
 
                         latest_plate = most_frequent_plate

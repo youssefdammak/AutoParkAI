@@ -114,7 +114,18 @@ def run_video_processing():
                     cursor.execute(sql_check, (most_frequent_plate,))
                     row=cursor.fetchone()
 
-                    if highest_score>0.5 and occurance_count>4 and row is None:
+                    if (highest_score>0.5 and occurance_count>4 and row is None) or (highest_score>0.5 and occurance_count>4 and row is not None and row[4] is not None):
+
+                        #Find a free parking spot
+                        sql_get_spot = "SELECT spot_label FROM ParkingSpots WHERE is_occupied = FALSE LIMIT 1"
+                        cursor.execute(sql_get_spot)
+                        spot_row = cursor.fetchone()
+
+                        if spot_row is None:
+                            print("No free spots available!")
+                            continue
+
+                        assigned_spot = spot_row[0]
 
                         #Find user ID from plate number
                         sql_get_user = "SELECT id FROM Users WHERE plate_number = %s"
@@ -124,27 +135,14 @@ def run_video_processing():
                         user_id = user_row[0] if user_row else None
 
                         # Insert only if it doesn't exist
-                        sql_insert = "INSERT INTO ParkingActivity (user_id, plate_number, entry_time) VALUES (%s,%s,%s)"
+                        sql_insert = "INSERT INTO ParkingActivity (user_id, plate_number, entry_time, parking_spot) VALUES (%s,%s,%s,%s)"
                         entry_time=datetime.now()
-                        cursor.execute(sql_insert, (user_id,most_frequent_plate,entry_time))
-                        conn.commit()
+                        cursor.execute(sql_insert, (user_id,most_frequent_plate,entry_time,assigned_spot))
 
-                        latest_plate = most_frequent_plate
-                        latest_entry_time=entry_time
-                    
-                    elif highest_score>0.5 and occurance_count>4 and row is not None and row[4] is not None:
+                        #Mark the spot as occupied
+                        sql_update_spot = "UPDATE ParkingSpots SET is_occupied = TRUE WHERE spot_label = %s"
+                        cursor.execute(sql_update_spot, (assigned_spot,))
 
-                        #Find user ID from plate number
-                        sql_get_user = "SELECT id FROM Users WHERE plate_number = %s"
-                        cursor.execute(sql_get_user, (most_frequent_plate,))
-                        user_row = cursor.fetchone()
-
-                        user_id = user_row[0] if user_row else None
-
-                        # Insert only if it doesn't exist
-                        sql_insert = "INSERT INTO ParkingActivity (user_id, plate_number, entry_time) VALUES (%s,%s,%s)"
-                        entry_time=datetime.now()
-                        cursor.execute(sql_insert, (user_id,most_frequent_plate,entry_time))
                         conn.commit()
 
                         latest_plate = most_frequent_plate
