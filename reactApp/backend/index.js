@@ -216,6 +216,30 @@ app.get('/api/weekly-activity/:userId', async (req, res) => {
   }
 });
 
+app.get('/api/spotsOccupied', async (req, res) => {
+  try {
+    const [rows] = await db.promise().query(`
+      SELECT spot_label FROM ParkingSpots WHERE is_occupied = TRUE;
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching Spots Occupied:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error('Logout error:', err);
+      return res.status(500).json({ error: 'Logout failed' });
+    }
+    res.clearCookie('connect.sid'); // name of the session cookie
+    res.json({ message: 'Logged out successfully' });
+  });
+});
+
+
 
 app.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`)
