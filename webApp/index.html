@@ -2,198 +2,177 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AutoParkAI - Profile</title>
-  <link rel="stylesheet" href="index.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Smart Parking Map</title>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --text: #2c3e50;
+      --available: #27ae60;
+      --occupied: #c0392b;
+      --road: #bdc3c7;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      padding: 2rem;
+    }
+
+    .card {
+      max-width: 1000px;
+      margin: auto;
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+
+    .card-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .parking-lot {
+      display: grid;
+      grid-template-columns: 50px repeat(10, 1fr) 50px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .row-label {
+      writing-mode: vertical-rl;
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 0.8rem;
+    }
+
+    .spot {
+      background: var(--road);
+      height: 45px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      transition: transform 0.2s ease;
+      cursor: pointer;
+    }
+
+    .spot.available {
+      background: var(--available);
+    }
+
+    .spot.occupied {
+      background: var(--occupied);
+    }
+
+    .spot:hover {
+      transform: scale(1.05);
+    }
+
+    .road-label {
+      grid-column: span 12;
+      background: var(--road);
+      text-align: center;
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .legend-box {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+
+    .available-box {
+      background: var(--available);
+    }
+
+    .occupied-box {
+      background: var(--occupied);
+    }
+
+    .road-box {
+      background: var(--road);
+    }
+
+    @media (max-width: 768px) {
+      .parking-lot {
+        grid-template-columns: 30px repeat(5, 1fr) 30px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="header-container">
-      <div class="logo">
-        <i class="fas fa-parking"></i>
-        <div>
-          <h1>AutoParkAI</h1>
-          <p>Smart Parking Management</p>
-        </div>
-      </div>
-      <nav>
-        <ul>
-          <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
-          <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
-          <li><a href="#"><i class="fas fa-history"></i> History</a></li>
-          <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-      </nav>
+  <div class="card">
+    <div class="card-title">Smart Parking Lot Map</div>
+
+    <div class="road-label">Entrance ➡️</div>
+
+    <!-- First Row (A) -->
+    <div class="parking-lot">
+      <div class="row-label">A</div>
+      <div class="spot available">A1</div>
+      <div class="spot occupied">A2</div>
+      <div class="spot available">A3</div>
+      <div class="spot occupied">A4</div>
+      <div class="spot available">A5</div>
+      <div class="spot available">A6</div>
+      <div class="spot occupied">A7</div>
+      <div class="spot available">A8</div>
+      <div class="spot available">A9</div>
+      <div class="spot occupied">A10</div>
+      <div class="row-label">A</div>
     </div>
-  </header>
 
-  <div class="main-container">
-    <section class="dashboard">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Welcome, John Doe</h3>
-          <div class="card-icon">
-            <i class="fas fa-user-circle"></i>
-          </div>
-        </div>
-        <div class="stats">
-          <div class="stat-item">
-            <div class="stat-value">ABC1234</div>
-            <div class="stat-label">Plate Number</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">Gold</div>
-            <div class="stat-label">Membership</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">10</div>
-            <div class="stat-label">Visits This Month</div>
-          </div>
-        </div>
-      </div>
-      
+    <!-- Second Row (B) -->
+    <div class="parking-lot">
+      <div class="row-label">B</div>
+      <div class="spot occupied">B1</div>
+      <div class="spot available">B2</div>
+      <div class="spot occupied">B3</div>
+      <div class="spot available">B4</div>
+      <div class="spot available">B5</div>
+      <div class="spot occupied">B6</div>
+      <div class="spot available">B7</div>
+      <div class="spot available">B8</div>
+      <div class="spot occupied">B9</div>
+      <div class="spot available">B10</div>
+      <div class="row-label">B</div>
+    </div>
 
-      <!-- User Activity Graph -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Weekly Parking Activity</h3>
-          <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
-        </div>
-        <canvas id="activityChart" height="100"></canvas>
-      </div>
-      
+    <div class="road-label">⬅️ Exit</div>
 
-      <!-- Recent Payments -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Recent Payments</h3>
-          <div class="card-icon">
-            <i class="fas fa-file-invoice-dollar"></i>
-          </div>
-        </div>
-        <div class="log-item">
-          <div class="log-plate"><i class="fas fa-car"></i> ABC1234</div>
-          <div class="log-time">July 2, 2025</div>
-          <div class="log-status entry">$5.00</div>
-        </div>
-        <div class="log-item">
-          <div class="log-plate"><i class="fas fa-car"></i> XYZ7890</div>
-          <div class="log-time">June 30, 2025</div>
-          <div class="log-status entry">$7.00</div>
-        </div>
-      </div>
-
-      <!-- Payment Summary -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Amount Due</h3>
-          <div class="card-icon">
-            <i class="fas fa-credit-card"></i>
-          </div>
-        </div>
-        <div class="stats" style="justify-content: center; margin-bottom: 1rem;">
-          <div class="stat-item">
-            <div class="stat-value" style="color: var(--danger); font-size: 2rem;">$12.50</div>
-            <div class="stat-label">Current Balance</div>
-          </div>
-        </div>
-        <button class="cta-button" style="width: 100%;">
-          <i class="fas fa-paper-plane"></i> Pay Now
-        </button>
-      </div>
-
-      <!-- Real-Time Parking Status -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Parking Status</h3>
-          <div class="card-icon"><i class="fas fa-traffic-light"></i></div>
-        </div>
-        <div class="stats">
-          <div class="stat-item">
-            <div class="stat-value" style="color: green;">Inside</div>
-            <div class="stat-label">Current Status</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">10:45 AM</div>
-            <div class="stat-label">Last Entry</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Parking Spot History -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Recent Parking Sessions</h3>
-          <div class="card-icon"><i class="fas fa-history"></i></div>
-        </div>
-        <table style="width: 100%; font-size: 0.9rem;">
-          <thead>
-            <tr style="text-align: left;">
-              <th>Spot</th>
-              <th>Entry</th>
-              <th>Exit</th>
-              <th>Duration</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>A12</td>
-              <td>09:12 AM</td>
-              <td>11:45 AM</td>
-              <td>2h 33m</td>
-            </tr>
-            <tr>
-              <td>B03</td>
-              <td>02:00 PM</td>
-              <td>04:10 PM</td>
-              <td>2h 10m</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Account Actions -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Manage Account</h3>
-          <div class="card-icon"><i class="fas fa-user-cog"></i></div>
-        </div>
-        <div class="stats" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
-          <button class="cta-button outline"><i class="fas fa-edit"></i> Edit Profile</button>
-          <button class="cta-button outline"><i class="fas fa-key"></i> Change Password</button>
-          <button class="cta-button outline danger"><i class="fas fa-trash"></i> Delete Account</button>
-        </div>
-      </div>
-    </section>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-box available-box"></div> Available</div>
+      <div class="legend-item"><div class="legend-box occupied-box"></div> Occupied</div>
+      <div class="legend-item"><div class="legend-box road-box"></div> Road</div>
+    </div>
   </div>
-
-  <script>
-    const ctx = document.getElementById('activityChart').getContext('2d');
-    const activityChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-          label: 'Parking Entries',
-          data: [2, 3, 1, 10, 2, 0, 1], // Example data (fetch dynamically later)
-          backgroundColor: 'rgba(67, 97, 238, 0.6)',
-          borderRadius: 8,
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: { stepSize: 1 }
-          }
-        },
-        plugins: {
-          legend: { display: false },
-        }
-      }
-    });
-  </script>
 </body>
 </html>

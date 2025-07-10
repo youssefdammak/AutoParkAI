@@ -1,0 +1,109 @@
+:root {
+  --bg: #f8f9fa;
+  --card-bg: #ffffff;
+  --text: #2c3e50;
+  --available: #27ae60;
+  --occupied: #c0392b;
+  --road: #bdc3c7;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+.card {
+  max-width: 1000px;
+  margin: auto;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.card-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.parking-lot {
+  display: grid;
+  grid-template-columns: 50px repeat(10, 1fr) 50px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.row-label {
+  writing-mode: vertical-rl;
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 0.8rem;
+}
+
+.spot {
+  background: var(--road);
+  height: 45px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.spot.available {
+  background: var(--available);
+}
+
+.spot.occupied {
+  background: var(--occupied);
+}
+
+.spot:hover {
+  transform: scale(1.05);
+}
+
+.road-label {
+  background: var(--road);
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  color: var(--text);
+  margin: 1rem 0;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.legend-box {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.available-box {
+  background: var(--available);
+}
+
+.occupied-box {
+  background: var(--occupied);
+}
+
+.road-box {
+  background: var(--road);
+}
