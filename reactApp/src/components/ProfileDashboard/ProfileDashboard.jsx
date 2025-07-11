@@ -151,7 +151,7 @@ function ProfileDashboard() {
         }
     }, [weeklyActivity]);
 
-    if (!user) return <p>Loading profile...</p>;
+    if (!user) return <p>Not Logged In...</p>;
     return (
         <div className="main-container">
         <section className="dashboard">

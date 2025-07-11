@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './Dashboard.css';
 
 function Dashboard() {
-    const total = 100; // total parking spots
+    const total = 20; // total parking spots
 
     const [available, setAvailable] = useState(total);
     const [occupied, setOccupied] = useState(0);
