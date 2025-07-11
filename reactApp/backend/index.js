@@ -239,7 +239,29 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
+app.get('/api/parking-spot/:plate', async (req, res) => {
+  const plate = req.params.plate;
 
+  try {
+    const [rows] = await db.promise().query(`
+      SELECT parking_spot 
+      FROM ParkingActivity 
+      WHERE plate_number = ? 
+        AND exit_time IS NULL
+      ORDER BY entry_time DESC
+      LIMIT 1
+    `, [plate]);
+
+    if (rows.length === 0) {
+      return res.json({ spot: null});
+    }
+
+    res.json({ spot: rows[0].parking_spot});
+  } catch (err) {
+    console.error('Error fetching parking spot:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 app.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`)

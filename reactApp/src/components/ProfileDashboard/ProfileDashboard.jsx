@@ -23,6 +23,8 @@ function ProfileDashboard() {
                                                             { day: 'Sunday', sessions: 0 }
                                                         ]);
 
+    const [parkingSpot, setParkingSpot] = useState({spot : null});
+
     useEffect(() => {
         fetch('http://localhost:5002/api/profile', {
             credentials: 'include'
@@ -81,6 +83,16 @@ function ProfileDashboard() {
             .then(res => res.json())
             .then(data => {
                 setWeeklyActivity(data);
+            });
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (user?.plate_number) {
+            fetch(`http://localhost:5002/api/parking-spot/${user.plate_number}`)
+            .then(res => res.json())
+            .then(data => {
+                setParkingSpot(data);
             });
         }
     }, [user]);
@@ -236,6 +248,12 @@ function ProfileDashboard() {
                 </div>
                 <div className="stat-label">Current Status</div>
                 </div>
+                {parkingStatus.status === 'Inside' && (
+                <div className="stat-item">
+                <div className="stat-value">{parkingSpot.spot}</div>
+                <div className="stat-label">Parking Spot</div>
+                </div>
+                )}
                 <div className="stat-item">
                 <div className="stat-value">{new Date(parkingStatus.lastEntry).toLocaleTimeString()}</div>
                 <div className="stat-label">Last Entry</div>
